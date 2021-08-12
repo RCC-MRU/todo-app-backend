@@ -1,0 +1,27 @@
+{
+  "name": "todo-app-backend",
+  "version": "1.0.0",
+  "description": "todo app backend using nodejs and mysql",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Sanchitbajaj02/todo-app-backend.git"
+  },
+  "author": "RCC",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Sanchitbajaj02/todo-app-backend/issues"
+  },
+  "homepage": "https://github.com/Sanchitbajaj02/todo-app-backend#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "morgan": "^1.10.0",
+    "mysql2": "^2.3.0"
+  }
+}
