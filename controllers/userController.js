@@ -1,23 +1,20 @@
+const { response } = require("express");
 const db = require("../database/db");
 
 module.exports = {
   displayUser: function (req, res) {
-    let sql = "SELECT * FROM `user` ";
+    let sql = `SELECT * FROM user`;
 
     const query = db.query(sql, (err, result) => {
       if (err) {
         throw err;
       }
-
       res.status(200).send(result);
     });
-
-    console.log(query.sql);
   },
 
-  addUser: function (req, res) {
-    const userData = req.body;
-
+  addUser: async function (req, res) {
+    const userdata = req.body;
     /* 
     1. check if user exist through email - Rakhi
     2. check password length using if - Rakhi
@@ -26,22 +23,62 @@ module.exports = {
     5. phone number should be equal to 10 - Bhavesh
     */
 
-    let sql = "INSERT INTO `user` SET ?";
+    let sql = `INSERT INTO user SET ?`;
 
-    const query = db.query(sql, userData, (err, result) => {
+    let exsistenceSql = `Select * from user where email ='${userdata.email}'`;
+
+    //Checking the already exsistence of user
+    const exsistenceCheck = db.query(exsistenceSql, (err, rows) => {
       if (err) {
-        console.log("line 31: ", err.sqlMessage)
-        
+        console.log(err.sqlMessage);
+
         throw err;
-        
       }
 
-      res.status(200).json({
-        message: "success message",
-        data: result,
-      });
-    });
+      //Checking as per rows length
+      if (rows.length > 0) {
+        res.status(409).json({
+          message: "User aleady exsist"
+        });
+      } else {
 
-    console.log(query.sql);
-  },
+        //Password checking
+        if (userdata.password.length < 8) {
+          res.status(400).json({
+            message: "Password too short"
+          });
+        }
+        //Insertion of data
+        else {
+
+          // regex statement
+          var emailPattern = /^[a-zA-Z0-9]+@[a-zA-Z0-9]+\.{1,1}[a-zA-Z]{2,4}$/;
+
+          //Checking for correct mail
+          if(!emailPattern.test(userdata.email))
+          {
+            res.status(400).json({
+              message: "Invalid email"
+            });
+
+          }else{
+            const query = db.query(sql, userdata, (err, result) => {
+              if (err) {
+                console.log("line 31: ", err.sqlMessage);
+
+                throw err;
+              }
+
+              res.status(200).json({
+                message: "success message",
+                data: result,
+              });
+            });
+
+            console.log(query.sql);
+          }
+        }
+      }
+    });
+  }
 };
