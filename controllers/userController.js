@@ -80,5 +80,50 @@ module.exports = {
         }
       }
     });
-  }
+  },
+
+
+  login: async function (req, res) {
+    let userdata = req.body;
+
+    //Checking whether user exsist or not
+    let exsistenceSql = `Select * from user where username ='${userdata.username}'`;
+    const loginUser = db.query(exsistenceSql, (err, rows) => {
+      if (err) {
+        console.log(err.sqlMessage);
+        throw err;
+      }
+
+      if (rows.length > 0) {
+        let passwordCheck = `Select password from user where username ='${userdata.username}'`;
+
+        //Password query
+        const passwordCheckSql = db.query(passwordCheck, (err, rows) => {
+          if (err) {
+            console.log(err.sqlMessage);
+            throw err;
+          }
+
+          //Checking Password
+          if(userdata.password==rows[0].password)
+          {
+            res.status(200).json({
+              message:"Login Sucessfully"
+            })
+          }else
+          {
+            res.status(403).json({
+              message:"Incorrect password"
+            })
+          }
+
+
+        });
+      } else {
+        res.status(400).json({
+          message: "User do not exsist",
+        });
+      }
+    });
+  },
 };
