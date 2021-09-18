@@ -24,12 +24,12 @@ module.exports = {
 
   // Display to-do API
   showTodo: async function (req, res) {
-    let sql = `SELECT * FROM  todo WHERE userId = '${req.tokenData.userId}' `;
+    let sql = `SELECT * FROM  todo`;
     const query = db.query(sql, (err, result) => {
       if (err) {
         throw err;
       }
-      res.result(200).json({
+      res.status(200).json({
         message: "Your Todos",
         data: result,
       });
