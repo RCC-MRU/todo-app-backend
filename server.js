@@ -22,10 +22,10 @@ db.connect((err) => {
 });
 
 const todoRouter = require("./routes/todo");
-app.use("/", todoRouter);
+app.use("/todos", todoRouter);
 
 const userRouter = require("./routes/user");
-app.use('/user', userRouter);
+app.use('/users', userRouter);
 
 // if you enter any wrong route, request automatically redirect to this because it has *
 app.get("*", function (req, res) {

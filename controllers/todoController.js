@@ -1,43 +1,54 @@
-
 const { response } = require("express");
 const db = require("../database/db");
-
 
 //add to-do API
 
 module.exports = {
-    addtodo : async function(req, res){
-        let sql = `INSERT INTO user SET ?`;
+  addTodo: async function (req, res) {
+    const todoData = req.body;
 
-        const query = db.query(sql,(err,result) => {
-if(err){
-    throw err;
-}
-res.status(200).send(result);
-        });
-    },
+    let sql = `INSERT INTO todo SET ?`;
 
-    // Display to-do API
-    displaytodo : function(req,res){
-        let sql =  `SELECT * FROM  user`;
-        const query   = db.query(sql,(err,result)=>{
-            if(err){
-                throw err;
-            }
-            res.result(200).send(result);
-        });
-    },
+    const query = db.query(sql, todoData, (err, result) => {
+      if (err) {
+        throw err;
+      }
+      res.status(200).json({
+        message: "Todo added successfully",
+        data: result,
+      });
+    });
 
-        // Delete todo API
-    deletetodo : function(req,res){
-        let sql = `DELETE FROM todo where todo_id = ${req.param.todo_id}`;
-        const query = db.query(sql,(err,result) =>{
-        if(err)
-            {
-            throw err;
-    }
-        res.status(200).send(result);
+    console.log(query.sql);
+  },
 
-        });
-    },
+  // Display to-do API
+  showTodo: async function (req, res) {
+    let sql = `SELECT * FROM  todo WHERE userId = '${req.tokenData.userId}' `;
+    const query = db.query(sql, (err, result) => {
+      if (err) {
+        throw err;
+      }
+      res.result(200).json({
+        message: "Your Todos",
+        data: result,
+      });
+    });
+    console.log(query.sql);
+  },
+
+  // Delete todo API
+  deleteTodo: async function (req, res) {
+    let sql = `DELETE FROM todo WHERE todo_id = '${req.params.todo_id}' `;
+    const query = db.query(sql, (err, result) => {
+      if (err) {
+        throw err;
+      }
+      res.status(200).json({
+        message: "Todo deleted successfully",
+      });
+    });
+
+    console.log(query.sql);
+  },
 };
