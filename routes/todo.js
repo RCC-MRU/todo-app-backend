@@ -9,4 +9,6 @@ router.post("/add", todoController.addTodo);
 
 router.delete("/delete/:todo_id", todoController.deleteTodo);
 
+router.put("/update/:todo_id" ,todoController.updatetodo);
+
 module.exports = router;
