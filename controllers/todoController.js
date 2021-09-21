@@ -39,7 +39,7 @@ module.exports = {
 
   // Delete todo API
   deleteTodo: async function (req, res) {
-    let sql = `DELETE FROM todo WHERE todo_id = '${req.params.todo_id}' `;
+    let sql = `DELETE FROM todo WHERE todo_id = '${req.params.todoID}' `;
     const query = db.query(sql, (err, result) => {
       if (err) {
         throw err;
@@ -51,22 +51,43 @@ module.exports = {
 
     console.log(query.sql);
   },
-// update todo
-updatetodo : async function(req,res){
-  const data = req.body;
-  const id = req.params.todo_id;
-  console.log(data);
-  let sql = `UPDATE todo SET ? WHERE todo_id = '${id}'`; 
-    const query = db.query(sql,data,(err,result)=>{
-        if(err){
-          console.log(err)
-            throw err;
-        }
-        res.status(200).json({
-            message: "TODO updated",
-            data:result,
-        });
+
+  // update todo
+  updatetodo: async function (req, res) {
+    let callingOldData = `SELECT * FROM todo WHERE todo_id = '${req.params.todoID}' `;
+
+    db.query(callingOldData, (err, result) => {
+      if (err) throw err;
+
+      console.log(result[0]);
+
+      const updateData = {
+        task_title: req.body.task_title || result[0].task_title,
+        importance: req.body.importance || result[0].importance,
+        completed: req.body.completed || result[0].completed,
+        description: req.body.description || result[0].description,
+      };
+
+      console.log(updateData);
+
+      res.status(201).json({
+        old: result[0],
+        new: updateData,
+      });
+      // let sql = `UPDATE todo SET ? WHERE todo_id = '?'`;
+
+      // const query = db.query(sql, data, (err, result) => {
+      //   if (err) {
+      //     console.log(err);
+      //     throw err;
+      //   }
+      //   res.status(200).json({
+      //     message: "TODO updated",
+      //     data: result,
+      //   });
+      // });
+
+      // console.log(query.sql);
     });
-    console.log(query.sql);
-},
+  },
 };

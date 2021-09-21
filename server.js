@@ -7,7 +7,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 dotenv.config();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3001;
 
 app.use(express.json());
 app.use(morgan("dev"));
@@ -25,7 +25,7 @@ const todoRouter = require("./routes/todo");
 app.use("/todos", todoRouter);
 
 const userRouter = require("./routes/user");
-app.use('/users', userRouter);
+app.use("/users", userRouter);
 
 // if you enter any wrong route, request automatically redirect to this because it has *
 app.get("*", function (req, res) {
