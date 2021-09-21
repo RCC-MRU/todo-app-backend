@@ -7,8 +7,8 @@ router.get("/display", todoController.showTodo);
 
 router.post("/add", todoController.addTodo);
 
-router.delete("/delete/:todo_id", todoController.deleteTodo);
+router.delete("/delete/:todoID", todoController.deleteTodo);
 
-router.put("/update/:todo_id" ,todoController.updatetodo);
+router.put("/update/:todoID", todoController.updatetodo);
 
 module.exports = router;
