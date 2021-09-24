@@ -3,12 +3,14 @@ const router = express.Router();
 
 const todoController = require("../controllers/todoController");
 
-router.get("/display", todoController.showTodo);
+const { jwtVerification } = require("../middleware/token");
 
-router.post("/add", todoController.addTodo);
+router.get("/display", jwtVerification, todoController.showTodo);
 
-router.delete("/delete/:todoID", todoController.deleteTodo);
+router.post("/add", jwtVerification, todoController.addTodo);
 
-router.put("/update/:todoID", todoController.updatetodo);
+router.delete("/delete/:todoID", jwtVerification, todoController.deleteTodo);
+
+router.put("/update/:todoID", jwtVerification, todoController.updatetodo);
 
 module.exports = router;

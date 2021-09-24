@@ -1,4 +1,4 @@
-const sign=require('./middleware/token')
+const sign = require("./middleware/token");
 const express = require("express");
 const app = express();
 
@@ -28,14 +28,12 @@ app.use("/todos", todoRouter);
 const userRouter = require("./routes/user");
 app.use("/users", userRouter);
 
-
-app.get('/check',sign.jwtVerification,(req,res)=>
-{
-  res.json({
-    message:"Test message",
-    id:req.result.id
-  });
-})
+// app.get("/check", sign.jwtVerification, (req, res) => {
+//   res.json({
+//     message: "Test message",
+//     id: req.result.id,
+//   });
+// });
 
 // if you enter any wrong route, request automatically redirect to this because it has *
 app.get("*", function (req, res) {
@@ -45,10 +43,8 @@ app.get("*", function (req, res) {
   });
 });
 
-
-
 app.listen(port, () => {
   console.log(`Server running at http://localhost:${port}/`);
 });
 
-
+// FIXME: generate your own .env file
