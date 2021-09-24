@@ -29,7 +29,7 @@ function jwtVerification(req, res, next) {
 
   jwt.verify(token, jwtSecretKey, (err, result) => {
     if (err) throw err;
-    req.result = result;
+    req.tokenData = result;
     next();
   });
 }

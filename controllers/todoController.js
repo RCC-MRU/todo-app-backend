@@ -18,7 +18,6 @@ module.exports = {
         data: result,
       });
     });
-
     console.log(query.sql);
   },
 
@@ -39,7 +38,7 @@ module.exports = {
 
   // Delete todo API
   deleteTodo: async function (req, res) {
-    let sql = `DELETE FROM todo WHERE todo_id = '${req.params.todoID}' `;
+    let sql = `DELETE FROM todo WHERE todo_id = '${req.params.id}' `;
     const query = db.query(sql, (err, result) => {
       if (err) {
         throw err;
