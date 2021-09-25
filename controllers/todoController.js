@@ -23,7 +23,7 @@ module.exports = {
 
   // Display to-do API
   showTodo: async function (req, res) {
-    let sql = `SELECT * FROM  todo`;
+    let sql = `SELECT * FROM  todo WHERE user_id='${req.tokenData.userId}' `;
     const query = db.query(sql, (err, result) => {
       if (err) {
         throw err;
@@ -63,34 +63,39 @@ module.exports = {
       const updateData = {
         task_title: req.body.task_title || result[0].task_title,
         importance: req.body.importance || result[0].importance,
-        completed: req.body.completed || result[0].completed,
         description: req.body.description || result[0].description,
+
       };
 
       console.log(updateData);
-      // let sql = "UPDATE `todo` SET `task_title`= ? updateData.task_title ? ,`importance`='+ updateData.importance +',`completed`='+ updateData.completed +',`description`=' + updateData.description +' WHERE `todo_id` = ' + req.params.todoID + '";
-
+      let sql =
+        "UPDATE `todo` SET `task_title`=?, `importance`=?,`completed`=?,`description`=? WHERE `todo_id`=?";
 
       // let sql = `UPDATE todo SET task_title = '' , importance = '${}', completed = '${}', description = '${updateData.description}' WHERE todo_id = '${req.params.todoID}'`;
-      const query = db.query(sql,(err, result) => {
-        
-        
-        if (err) {
-          console.log(err);
-          throw err;
+      const query = db.query(
+        sql,
+        [
+          updateData.task_title,
+          updateData.importance,
+          updateData.completed,
+          updateData.description,
+          req.params.todoID,
+        ],
+        (err, finalResult) => {
+          if (err) {
+            console.log(err);
+            throw err;
+          }
 
+          res.status(200).json({
+            message: "Todo Updated successfully",
+            old: result[0],
+            new: updateData,
+          });
         }
-        
-        res.status(200).json({
-
-          message : "Todo Updated successfully",
-          old: result[0],
-          new: updateData,
-        });
-      });
+      );
 
       console.log(query.sql);
     });
-    
   },
 };

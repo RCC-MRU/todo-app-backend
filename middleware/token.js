@@ -29,6 +29,7 @@ function jwtVerification(req, res, next) {
 
   jwt.verify(token, jwtSecretKey, (err, result) => {
     if (err) throw err;
+    console.log(result)
     req.tokenData = result;
     next();
   });
