@@ -1,4 +1,4 @@
-const { response } = require("express");
+const { response, query } = require("express");
 const db = require("../database/db");
 
 //add to-do API
@@ -69,25 +69,29 @@ module.exports = {
       };
 
       console.log(updateData);
+      // let sql = "UPDATE `todo` SET `task_title`= ? updateData.task_title ? ,`importance`='+ updateData.importance +',`completed`='+ updateData.completed +',`description`=' + updateData.description +' WHERE `todo_id` = ' + req.params.todoID + '";
 
-      res.status(201).json({
-        old: result[0],
-        new: updateData,
+
+      // let sql = `UPDATE todo SET task_title = '' , importance = '${}', completed = '${}', description = '${updateData.description}' WHERE todo_id = '${req.params.todoID}'`;
+      const query = db.query(sql,(err, result) => {
+        
+        
+        if (err) {
+          console.log(err);
+          throw err;
+
+        }
+        
+        res.status(200).json({
+
+          message : "Todo Updated successfully",
+          old: result[0],
+          new: updateData,
+        });
       });
-      // let sql = `UPDATE todo SET ? WHERE todo_id = '?'`;
 
-      // const query = db.query(sql, data, (err, result) => {
-      //   if (err) {
-      //     console.log(err);
-      //     throw err;
-      //   }
-      //   res.status(200).json({
-      //     message: "TODO updated",
-      //     data: result,
-      //   });
-      // });
-
-      // console.log(query.sql);
+      console.log(query.sql);
     });
+    
   },
 };
