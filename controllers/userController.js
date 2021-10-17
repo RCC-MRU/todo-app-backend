@@ -1,6 +1,5 @@
-const sign=require('../middleware/token');
+const sign = require("../middleware/token");
 const db = require("../database/db");
-const { use } = require('../routes/todo');
 
 module.exports = {
   displayUser: async function (req, res) {
@@ -69,9 +68,6 @@ module.exports = {
                 message: "Record added sucessfully",
                 data: result,
               });
-
-
-
             });
 
             console.log(query.sql);
@@ -101,10 +97,8 @@ module.exports = {
           message: `${username} logged in successfully`,
           username: username,
           fullname: fullname,
-          token: sign.generateToken(userID)
+          token: sign.generateToken(userID),
         });
-
-
       } else {
         res.status(400).json({
           message: "Invalid credentials",
