@@ -1,6 +1,6 @@
 const sign = require("../middleware/token");
 const db = require("../database/db");
-
+const bcrypt = require("bcrypt");
 module.exports = {
   displayUser: async function (req, res) {
     let sql = `SELECT * FROM user`;
@@ -25,17 +25,13 @@ module.exports = {
     4. check if user exist through email - Bhavesh
     5. phone number should be equal to 10 - Bhavesh
     */
-
     let sql = `INSERT INTO user SET ?`;
-
     let exsistenceSql = `Select * from user where email ='${userdata.email}'`;
-
     //Checking the already exsistence of user
     const exsistenceCheck = db.query(exsistenceSql, (err, rows) => {
       if (err) {
         throw err;
       }
-
       //Checking as per rows length
       if (rows.length > 0) {
         res.status(409).json({
@@ -59,18 +55,36 @@ module.exports = {
               message: "Invalid email address",
             });
           } else {
-            const query = db.query(sql, userdata, (err, result) => {
-              if (err) {
-                throw err;
-              }
-
-              res.status(200).json({
-                message: "Record added sucessfully",
-                data: result,
-              });
-            });
-
-            console.log(query.sql);
+            const hashPassword = bcrypt.hash(userdata.password, 12).then((arr) => {
+              const newuserdata = {
+                fullname: userdata.fullname,
+                email: userdata.email,
+                username: userdata.username,
+                password: arr,
+              };
+              console.log(newuserdata)
+              const query = db.query(
+                sql,
+                newuserdata,
+                            (err, result) => {
+                  if (err) {
+                    throw err;
+                  }
+  
+                  res.status(200).json({
+                    message: "Record added sucessfully",
+                    data: result,
+                    password: userdata.password,
+                  });
+                }
+              );
+  
+            })
+            .catch(error =>{
+              console.log(error);
+            })
+            
+            // console.log(query.sql);
           }
         }
       }
@@ -82,7 +96,7 @@ module.exports = {
 
     //Checking whether user exsist or not
     let exsistenceSql = `Select * from user where username ='${userdata.username}' AND password = '${userdata.password}' `;
-    const loginUser = db.query(exsistenceSql, (err, rows) => {
+    const loginUser = db.query(exsistenceSql, hashPassword, (err, rows) => {
       if (err) {
         throw err;
       }
