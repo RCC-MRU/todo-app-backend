@@ -1,5 +1,6 @@
 const sign = require("../middleware/token");
 const db = require("../database/db");
+const { json } = require("express");
 
 module.exports = {
   displayUser: async function (req, res) {
@@ -26,6 +27,7 @@ module.exports = {
     5. phone number should be equal to 10 - Bhavesh
     */
 
+
     let sql = `INSERT INTO user SET ?`;
 
     let exsistenceSql = `Select * from user where email ='${userdata.email}'`;
@@ -37,11 +39,30 @@ module.exports = {
       }
 
       //Checking as per rows length
-      if (rows.length > 0) {
+      if (rows.length > 0&&rows[0].active!=0) {
         res.status(409).json({
           message: "User aleady exist",
         });
-      } else {
+      } else if(rows.length > 0&&rows[0].active==0)
+      {
+          let sql=`Update user SET active=1 where email='${userdata.email}'`
+
+          let query=db.query(sql,(err,result)=>{
+              if(err)
+              {
+                throw err;
+              }
+
+              res.status(200).json(
+                {
+                  message: "Record added sucessfully",
+                  data: result,
+                }
+              );
+          });
+
+
+      }else {
         //Password checking
         if (userdata.password.length < 8) {
           res.status(400).json({
@@ -87,7 +108,7 @@ module.exports = {
         throw err;
       }
 
-      if (rows.length > 0) {
+      if (rows.length > 0&&rows[0].active!=0) {
         //Generating token
         let userID = rows[0].id;
         let username = rows[0].username;
@@ -106,5 +127,23 @@ module.exports = {
       }
     });
     console.log(loginUser.sql);
+  },
+
+  deleteUser:async function(req,res)
+  {
+    let sql=`UPDATE user SET active=0 where id=${req.params.ID}`;
+    const query=db.query(sql,(err,result)=>{
+      if(err)
+      {
+        throw err;
+      }
+
+      res.status(200).json(
+        {
+          message:"Deleted Sucessfully",
+        }
+      );
+
+    });
   },
 };
