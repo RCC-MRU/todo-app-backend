@@ -10,7 +10,7 @@ function generateToken(userID) {
   };
 
   const signToken = jwt.sign(data, jwtSecretKey, {
-    expiresIn: "1h",
+    expiresIn: "0.1h",
   });
 
   return signToken;
