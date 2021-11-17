@@ -1,5 +1,7 @@
 const sign = require("../middleware/token");
 const db = require("../database/db");
+const { json } = require("express");
+
 const bcrypt = require("bcrypt");
 module.exports = {
   displayUser: async function (req, res) {
@@ -25,6 +27,7 @@ module.exports = {
     4. check if user exist through email - Bhavesh
     5. phone number should be equal to 10 - Bhavesh
     */
+
     let sql = `INSERT INTO user SET ?`;
     let exsistenceSql = `Select * from user where email ='${userdata.email}'`;
     //Checking the already exsistence of user
@@ -33,9 +36,22 @@ module.exports = {
         throw err;
       }
       //Checking as per rows length
-      if (rows.length > 0) {
+      if (rows.length > 0 && rows[0].active != 0) {
         res.status(409).json({
           message: "User aleady exist",
+        });
+      } else if (rows.length > 0 && rows[0].active == 0) {
+        let sql = `Update user SET active=1 where email='${userdata.email}'`;
+
+        let query = db.query(sql, (err, result) => {
+          if (err) {
+            throw err;
+          }
+
+          res.status(200).json({
+            message: "Record added sucessfully",
+            data: result,
+          });
         });
       } else {
         //Password checking
@@ -91,7 +107,6 @@ module.exports = {
   loginUser: async function (req, res) {
     let userdata = req.body;
 
-
     //Checking whether user exsist or not
     let exsistenceSql = `Select * from user where username ='${userdata.username}' `;
     const loginUser = db.query(exsistenceSql, (err, rows) => {
@@ -99,33 +114,20 @@ module.exports = {
         throw err;
       }
 
-      if (rows.length > 0) {
-        const hashPassword = rows[0].password;
-        bcrypt.compare(userdata.password, hashPassword).then(success=>{
-          if(success){
-            let userID = rows[0].id;
-            let username = rows[0].username;
-            let fullname = rows[0].fullname;
-    
-            res.status(200).json({
-              message: `${username} logged in successfully`,
-              username: username,
-              fullname: fullname,
-              token: sign.generateToken(userID),
-            });    
-          }
-          else{
-            res.status(400).json({
-              message: "Login unsuccessful",
-            });    
-          }
-        })
-        .catch((error) => {
-          console.log(error);
+      if (rows.length > 0 && rows[0].active != 0) {
+        //Generating token
+        let userID = rows[0].id;
+        let username = rows[0].username;
+        let fullname = rows[0].fullname;
+
+        res.status(200).json({
+          message: `${username} logged in successfully`,
+          username: username,
+          fullname: fullname,
+          token: sign.generateToken(userID),
         });
 
         //Generating token
-        
       } else {
         res.status(400).json({
           message: "Invalid credentials",
@@ -133,5 +135,18 @@ module.exports = {
       }
     });
     console.log(loginUser.sql);
+  },
+
+  deleteUser: async function (req, res) {
+    let sql = `UPDATE user SET active=0 where id=${req.params.ID}`;
+    const query = db.query(sql, (err, result) => {
+      if (err) {
+        throw err;
+      }
+
+      res.status(200).json({
+        message: "Deleted Sucessfully",
+      });
+    });
   },
 };
