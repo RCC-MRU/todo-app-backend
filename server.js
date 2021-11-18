@@ -1,12 +1,10 @@
-const sign = require("./middleware/token");
+require("dotenv").config({ path: "./.env" });
+
 const express = require("express");
 const app = express();
 
 const morgan = require("morgan");
 const cors = require("cors");
-
-const dotenv = require("dotenv");
-dotenv.config();
 
 const port = process.env.PORT || 3001;
 
@@ -18,7 +16,7 @@ app.use(cors());
 const db = require("./database/db");
 db.connect((err) => {
   if (err) {
-    console.log(err);
+    console.log(err.message);
   } else console.log("DB connection");
 });
 

@@ -10,7 +10,7 @@ function generateToken(userID) {
   };
 
   const signToken = jwt.sign(data, jwtSecretKey, {
-    expiresIn: "0.1h",
+    expiresIn: "2h",
   });
 
   return signToken;
@@ -29,7 +29,7 @@ function jwtVerification(req, res, next) {
 
   jwt.verify(token, jwtSecretKey, (err, result) => {
     if (err) throw err;
-    console.log(result)
+    console.log(result);
     req.tokenData = result;
     next();
   });
@@ -39,4 +39,3 @@ module.exports = {
   generateToken,
   jwtVerification,
 };
-
