@@ -53,15 +53,13 @@ module.exports = {
   // update todo
   updatetodo: async function (req, res) {
 
-    //removing previous data
     const newData=req.body;
-    let insert=`Insert into todo SET ?`;
-    let callingOldData = `Delete FROM todo WHERE todo_id = '${req.params.todoID}' `;
-
-    db.query(callingOldData, (err, result) => {
+    let update=`Update todo set task_title='${newData.task_title}',importance='${newData.importance}',completed='${newData.completed}',description='${newData.description}' where todo_id=${req.params.todoID}`;
+  
+    db.query(update, (err, result) => {
       if (err) throw err;
     });
-       const query = db.query(insert, newData, (err, result) => {
+       const query = db.query(update, newData, (err, result) => {
         if (err) {
           throw err;
         }
@@ -70,7 +68,38 @@ module.exports = {
           data: result,
         });
       });
-      // console.log(query.insert);
   
+  },
+
+  showImportantList: async function (req, res)
+  {
+    let sql=`Select * from todo where todo_id='${req.params.todoID}' And importance=1`
+    db.query(sql ,(err,result)=>
+    {
+      console.log(sql)
+      res.status(200).json(
+        {
+          data:result
+        }
+      );
+    });
+
+  },
+
+  showCompletedList: async function (req, res)
+  {
+    let sql=`Select * from todo where todo_id='${req.params.todoID}' And completed=1`
+    db.query(sql ,(err,result)=>
+    {
+      console.log(sql)
+      res.status(200).json(
+        {
+          data:result
+        }
+      );
+    });
+
   }
+
 };
+

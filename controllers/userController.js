@@ -28,10 +28,12 @@ module.exports = {
     5. phone number should be equal to 10 - Bhavesh
     */
 
-    let sql = `INSERT INTO user SET ?`;
-    let exsistenceSql = `Select * from user where email ='${userdata.email}'`;
+
     //Checking the already exsistence of user
-    const exsistenceCheck = db.query(exsistenceSql, (err, rows) => {
+    let exsistenceSql = `Select * from user where email ='${userdata.email}'`;
+    const exsistenceCheck = db.query(exsistenceSql,userdata, (err, rows) => {
+      let sql = `INSERT INTO user SET ?`;
+
       if (err) {
         throw err;
       }
@@ -88,8 +90,7 @@ module.exports = {
 
                   res.status(200).json({
                     message: "Record added sucessfully",
-                    data: result,
-                    password: userdata.password,
+                    data: result
                   });
                 });
               })
@@ -108,33 +109,46 @@ module.exports = {
     let userdata = req.body;
 
     //Checking whether user exsist or not
-    let exsistenceSql = `Select * from user where username ='${userdata.username}' `;
-    const loginUser = db.query(exsistenceSql, (err, rows) => {
+    let exsistenceSql = `Select * from user where username =?`;
+    const loginUser = db.query(exsistenceSql,[userdata.username,userdata.password], (err, rows) => {
+      console.log(loginUser.sql);
       if (err) {
         throw err;
       }
-
-      if (rows.length > 0 && rows[0].active != 0) {
-        //Generating token
-        let userID = rows[0].id;
-        let username = rows[0].username;
-        let fullname = rows[0].fullname;
-
-        res.status(200).json({
-          message: `${username} logged in successfully`,
-          username: username,
-          fullname: fullname,
-          token: sign.generateToken(userID),
-        });
-
-        //Generating token
-      } else {
+      if(rows.length==0)
+      {
         res.status(400).json({
-          message: "Invalid credentials",
+          message:"Invalid Credentials"
         });
-      }
+      }else
+      {
+        bcrypt.compare(userdata.password, rows[0].password, function(err, result) {
+         if(result)
+         {
+
+            let userID = rows[0].id;
+            let username = rows[0].username;
+            let fullname = rows[0].fullname;
+            console.log(userID);
+            res.status(200).json(
+              {
+                 message:`${username} sucessfully logged in`,
+                 username:username,
+                 fullname:fullname,
+                 token: sign.generateToken(userID),
+              }
+            );
+         }else
+         {
+            res.status(400).json(
+              {
+                message:"Invalid Credentials"
+              }
+            );
+         }
+      });
+    }
     });
-    console.log(loginUser.sql);
   },
 
   deleteUser: async function (req, res) {
