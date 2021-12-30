@@ -1,4 +1,4 @@
-const express = require("express");
+const express = require("express"); 
 const router = express.Router();
 
 const todoController = require("../controllers/todoController");
@@ -7,9 +7,9 @@ const { jwtVerification } = require("../middleware/token");
 
 router.get("/display", jwtVerification, todoController.showTodo);
 
-router.get("/important/:todoID", jwtVerification, todoController.showImportantList);
+router.get("/important", jwtVerification, todoController.showImportantList);
 
-router.get("/completed/:todoID", jwtVerification, todoController.showCompletedList);
+router.get("/completed", jwtVerification, todoController.showCompletedList);
 
 router.post("/add", jwtVerification, todoController.addTodo);
 

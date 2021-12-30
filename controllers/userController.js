@@ -1,6 +1,6 @@
 const { generateToken } = require("../middleware/token");
 const db = require("../database/db");
-
+ 
 const bcrypt = require("bcrypt");
 module.exports = {
   displayUser: async function (req, res) {
