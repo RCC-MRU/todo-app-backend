@@ -7,6 +7,10 @@ const { jwtVerification } = require("../middleware/token");
 
 router.get("/display", jwtVerification, todoController.showTodo);
 
+router.get("/important/:todoID", jwtVerification, todoController.showImportantList);
+
+router.get("/completed/:todoID", jwtVerification, todoController.showCompletedList);
+
 router.post("/add", jwtVerification, todoController.addTodo);
 
 router.delete("/delete/:todoID", jwtVerification, todoController.deleteTodo);
