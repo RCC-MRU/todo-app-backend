@@ -9,11 +9,12 @@ module.exports = {
     const todoData = req.body;
     const userID = req.tokenData.userId;
     const insertionData = {
-      task_title: todoData.task_title,
+      task_title: todoData.taskTitle,
       description: todoData.description,
+      ending_time: todoData.endingTime,
       user_id: userID,
       importance: todoData.importance || 0,
-      completed: todoData.completed || 0
+      completed: todoData.completed || 0,
     };
     let sql = `INSERT INTO todo SET ?`;
 
@@ -70,25 +71,24 @@ module.exports = {
     let checkForExistance = `SELECT * FROM todo WHERE todo_id = ?`;
     const requestedID = req.params.todoID;
     const check = db.query(checkForExistance, requestedID, (err, result) => {
-        if(err) throw err;
-        
-        if (result.length > 0) {
-          let sql = `DELETE FROM todo WHERE todo_id = ?`;
-          const query = db.query(sql, requestedID, (err, result) => {
-            if(err) throw err;
+      if (err) throw err;
 
-            res.status(200).json({
-              message: "Todo deleted successfully",
-              data: result,
-            });
+      if (result.length > 0) {
+        let sql = `DELETE FROM todo WHERE todo_id = ?`;
+        const query = db.query(sql, requestedID, (err, result) => {
+          if (err) throw err;
+
+          res.status(200).json({
+            message: "Todo deleted successfully",
+            data: result,
           });
-        } else {
-          res.status(404).json({
-            message: "Todo not found"
-          });
-        }
+        });
+      } else {
+        res.status(404).json({
+          message: "Todo not found",
+        });
       }
-    );
+    });
   },
 
   // update todo
@@ -100,17 +100,21 @@ module.exports = {
       importance: content.importance || 0,
       user_id: user_id,
       completed: content.completed || 0,
-      description: content.description
+      description: content.description,
     };
     // let update = `Update todo set task_title='${newData.task_title}',importance='${newData.importance}',completed='${newData.completed}',description='${newData.description}' where todo_id=${req.params.todoID}`;
     const updateSql = `UPDATE todo SET ? WHERE todo_id = ?`;
-    const query = db.query(updateSql, [updation, req.params.todoID], (err, result) => {
-      if (err) throw err;
-      res.status(200).json({
-        message: "Todo Updated Successfully!",
-        data: result
-      });
-    });
+    const query = db.query(
+      updateSql,
+      [updation, req.params.todoID],
+      (err, result) => {
+        if (err) throw err;
+        res.status(200).json({
+          message: "Todo Updated Successfully!",
+          data: result,
+        });
+      }
+    );
     // const query = db.query(update, newData, (err, result) => {
     //   if (err) {
     //     throw err;
